@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                    @id @default(autoincrement())
+  email                String                 @unique
+  username             String                 @unique
+  name                 String
+  verified             Boolean                @default(true)
+  notificationSettings NotificationSettings[]
+
+  Reply         Reply[]
+  posts         Post[] //<- has to be first before the Post[] @relation()
+  postsLiked    Post[]  @relation("PostLikes")
+  postsFollowed Post[]  @relation("PostFollows")
+}
+
+enum NotificationSettings {
+  SECURITY
+  MARKETING
+  POSTS
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  published Boolean  @default(false)
+
+  likes   User[]  @relation("PostLikes")
+  follows User[]  @relation("PostFollows")
+  User    User    @relation(fields: [userId], references: [id])
+  Reply   Reply[]
+  tags    Tag[]
+}
+
+model Reply {
+  id        Int      @id @default(autoincrement())
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  postId    Int
+  published Boolean  @default(false)
+
+  author User @relation(fields: [userId], references: [id])
+  post   Post @relation(fields: [postId], references: [id])
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  Post Post[]
+}
