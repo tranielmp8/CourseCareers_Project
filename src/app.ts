@@ -9,7 +9,8 @@ import notFound from './middleware/notFound.js';
 
 
 const app = express();
-const port = 3000;
+// change to 8080 from 3000
+const port = 8080;
 
 app.use(express.json()) // switching to api
 app.use(xss)
