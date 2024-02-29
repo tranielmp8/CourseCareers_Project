@@ -16,12 +16,26 @@ model User {
   username             String                 @unique
   name                 String
   verified             Boolean                @default(true)
+  email2fa             Boolean                @default(false)
+  roles                Roles[]
   notificationSettings NotificationSettings[]
 
-  Reply         Reply[]
+  replies       Reply[]
   posts         Post[] //<- has to be first before the Post[] @relation()
-  postsLiked    Post[]  @relation("PostLikes")
-  postsFollowed Post[]  @relation("PostFollows")
+  postsLiked    Post[]    @relation("PostLikes")
+  postsFollowed Post[]    @relation("PostFollows")
+  password      Password?
+}
+
+model Password {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  hash   String
+  user   User   @relation(fields: userId, references: id, onDelete: Cascade)
+}
+
+enum Roles {
+  ADMIN
 }
 
 enum NotificationSettings {

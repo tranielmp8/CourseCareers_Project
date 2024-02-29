@@ -79,6 +79,7 @@ export const createLike: RequestHandler = async (req, res) => {
     const userId = req.user.userId;
 
     console.log('UserId', userId)
+    console.log('PostId', postId)
 
     const post = await prisma.post.update({
         where: { id: postId },
@@ -93,7 +94,6 @@ export const createLike: RequestHandler = async (req, res) => {
             _count: true,
         },
     });
-
     res.status(201).json({ postLikeCount: post._count.likes });
 };
 
